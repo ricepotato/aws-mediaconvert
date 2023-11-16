@@ -130,51 +130,6 @@
           "StreamInfResolution": "INCLUDE"
         }
       }
-    },
-    {
-      "CustomName": "Thumbnails",
-      "Name": "File Group",
-      "Outputs": [
-        {
-          "ContainerSettings": {
-            "Container": "RAW"
-          },
-          "VideoDescription": {
-            "Width": 1280,
-            "ScalingBehavior": "DEFAULT",
-            "Height": 720,
-            "TimecodeInsertion": "DISABLED",
-            "AntiAlias": "ENABLED",
-            "Sharpness": 50,
-            "CodecSettings": {
-              "Codec": "FRAME_CAPTURE",
-              "FrameCaptureSettings": {
-                "FramerateNumerator": 1,
-                "FramerateDenominator": 5,
-                "MaxCaptures": 500,
-                "Quality": 80
-              }
-            },
-            "AfdSignaling": "NONE",
-            "DropFrameTimecode": "ENABLED",
-            "RespondToAfd": "NONE",
-            "ColorMetadata": "INSERT"
-          }
-        }
-      ],
-      "OutputGroupSettings": {
-        "Type": "FILE_GROUP_SETTINGS",
-        "FileGroupSettings": {
-          "Destination": "s3://<MEDIABUCKET>/Thumbnails/",
-          "DestinationSettings": {
-            "S3Settings": {
-              "AccessControl": {
-                "CannedAcl": "PUBLIC_READ"
-              }
-            }
-          }
-        }
-      }
     }
   ],
   "AdAvailOffset": 0,
@@ -196,7 +151,7 @@
       "DeblockFilter": "DISABLED",
       "DenoiseFilter": "DISABLED",
       "TimecodeSource": "EMBEDDED",
-      "FileInput": "s3://rodeolabz-us-west-2/vodconsole/VANLIFE.m2ts"
+      "FileInput": "s3://<MEDIABUCKET>/key.mp4"
     }
   ]
 }

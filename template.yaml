@@ -11,33 +11,33 @@ Globals:
     Timeout: 3
     MemorySize: 128
 
-Parameters:
-  MediaBucket:
-    Type: String
-    Description: S3 bucket for media files
-  
-  AWSRegion:
-    Type: String
-    Description: AWS Region
+# Parameters:
+#   MediaBucket:
+#     Type: String
+#     Description: S3 bucket for media files
+
+# AWSRegion:
+#   Type: String
+#   Description: AWS Region
 
 Resources:
   MediaCreatedFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
-      CodeUri: lambda/
+      CodeUri: src/
       Handler: app.media_created_handler
       Runtime: python3.9
       Architectures:
         - x86_64
       Environment:
         Variables:
-          MEDIA_BUCKET: !Ref MediaBucket
-          AWS_REGION: !Ref AWS::Region
+          MEDIA_BUCKET: cf-simple-s3-origin-ricepotato-cdn-632854243364
+          AWS_REGION: ap-northeast-2
       Events:
         S3MediaCreated:
           Type: S3 # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
           Properties:
-            Bucket: !Ref MediaBucket # cf-simple-s3-origin-ricepotato-cdn-632854243364
+            Bucket: cf-simple-s3-origin-ricepotato-cdn-632854243364
             Events: s3:ObjectCreated:*
             Filter:
               S3Key:
@@ -48,7 +48,7 @@ Resources:
   MediaConvertStateChangedFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: lambda/
+      CodeUri: src/
       Handler: app.media_convert_job_state_change_handler
       Runtime: python3.9
       Architectures:
@@ -83,10 +83,6 @@ Outputs:
   MediaConvertStateChangedFunction:
     Description: "MediaConvert Job State Change Function ARN"
     Value: !GetAtt MediaConvertStateChangedFunction.Arn
-
-  MediaConvertJobStateChangeEvent:
-    Description: "MediaConvert Job State Change Event ARN"
-    Value: !Ref MediaConvertJobStateChangeEvent
 
   MediaConvertJobStateChangeEvent:
     Description: "MediaConvert Job State Change Event ARN"
