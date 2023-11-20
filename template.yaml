@@ -53,24 +53,24 @@ Resources:
       Runtime: python3.9
       Architectures:
         - x86_64
-
-  MediaConvertJobStateChangeEvent:
-    Type: AWS::Events::Rule
-    Properties:
-      Description: "MediaConvert Job State Change Event"
-      EventPattern:
-        source:
-          - aws.mediaconvert
-        detail-type:
-          - MediaConvert Job State Change
-        detail:
-          status:
-            - COMPLETE
-            - ERROR
-            - CANCELED
-      Targets:
-        - Arn: !GetAtt MediaConvertStateChangedFunction.Arn
-          Id: MediaConvertStateChangedFunction
+      Events:
+        MediaConvertJobStateChangeEvent:
+          Type: AWS::Events::Rule
+          Properties:
+            Description: "MediaConvert Job State Change Event"
+            EventPattern:
+              source:
+                - aws.mediaconvert
+              detail-type:
+                - MediaConvert Job State Change
+              detail:
+                status:
+                  - COMPLETE
+                  - ERROR
+                  - CANCELED
+            Targets:
+              - Arn: !GetAtt MediaConvertStateChangedFunction.Arn
+                Id: MediaConvertStateChangedFunction
 
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
