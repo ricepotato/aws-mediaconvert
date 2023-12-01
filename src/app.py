@@ -62,13 +62,15 @@ def media_created_handler(event, context):
     결과는 output/ 에 생성한다.
 
     """
+
+    log.info("media_created_handler event: %s", json.dumps(event, indent=4))
     src_s3_bucket_name = event["Records"][0]["s3"]["bucket"]["name"]
     src_s3_key = event["Records"][0]["s3"]["object"]["key"]
 
     log.info("media created. bucket=%s key=%s", src_s3_bucket_name, src_s3_key)
     asset_id = str(uuid.uuid4())
     source_s3 = f"s3://{src_s3_bucket_name}/{src_s3_key}"
-    dest_s3 = f"s3://{os.environ['MEDIA_BUCKET']}/output/{asset_id}"
+    dest_s3 = f"s3://{os.environ['MEDIA_OUTPUT_BUCKET']}/output/{asset_id}/video"
 
     log.info("dest s3: %s", dest_s3)
 
@@ -76,9 +78,10 @@ def media_created_handler(event, context):
     job_metadata["assetID"] = asset_id
     job_metadata["application"] = "onesearch mediaconvert sam"
     job_metadata["input"] = source_s3
+    job_metadata["output"] = dest_s3
 
     log.info("job metadata: %s", json.dumps(job_metadata, indent=4))
-    region_name = os.environ["AWS_REGION"]
+    region_name = os.environ["MEDIA_CONVERT_REGION"]
 
     job = create_media_convert_job(source_s3, dest_s3, region_name, job_metadata)
 
@@ -95,6 +98,61 @@ def media_created_handler(event, context):
 
 
 def media_convert_job_state_change_handler(event, context):
+    """
+    event example:
+    {
+      "version": "0",
+      "id": "7fb4aa47-dc53-891a-065f-810d8d7ac690",
+      "detail-type": "MediaConvert Job State Change",
+      "source": "aws.mediaconvert",
+      "account": "632854243364",
+      "time": "2023-12-01T09:52:14Z",
+      "region": "ap-northeast-2",
+      "resources": [
+        "arn:aws:mediaconvert:ap-northeast-2:632854243364:jobs/1701424327145-85oi69"
+      ],
+      "detail": {
+        "timestamp": 1701424334484,
+        "accountId": "632854243364",
+        "queue": "arn:aws:mediaconvert:ap-northeast-2:632854243364:queues/Default",
+        "jobId": "1701424327145-85oi69",
+        "status": "COMPLETE",
+        "userMetadata": {
+          "assetID": "daa6a1ab-f7bc-4459-9ed6-f490d00d0521",
+          "application": "onesearch mediaconvert sam",
+          "input": "s3://ricepotato-media-convert-ap-northeast-2/media/nyan_cat.mp4"
+        },
+        "outputGroupDetails": [
+          {
+            "outputDetails": [
+              {
+                "outputFilePaths": [
+                  "s3://cf-simple-s3-origin-ricepotato-cdn-632854243364/output/daa6a1ab-f7bc-4459-9ed6-f490d00d0521_720.m3u8"
+                ],
+                "durationInMs": 804,
+                "videoDetails": {
+                  "widthInPx": 1280,
+                  "heightInPx": 720,
+                  "averageBitrate": 4310208
+                }
+              }
+            ],
+            "playlistFilePaths": [
+              "s3://cf-simple-s3-origin-ricepotato-cdn-632854243364/output/daa6a1ab-f7bc-4459-9ed6-f490d00d0521.m3u8"
+            ],
+            "type": "HLS_GROUP"
+          }
+        ],
+        "paddingInserted": 0,
+        "blackVideoDetected": 0,
+        "warnings": [
+          { "code": 230001, "count": 1 },
+          { "code": 230005, "count": 1 }
+        ]
+      }
+    }
+
+    """
     log.info(event)
     return {
         "statusCode": 200,
